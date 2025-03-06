@@ -1,0 +1,23 @@
+.banner-shape{
+    z-index: -199;
+    top: -84px;
+    right: -110px;
+    width: 866px;
+    height: 520px;
+    transform: skew(28deg);
+    border-radius: 40px;
+    position: absolute;
+    background-color: #98a9ff;
+}
+
+.banner-shape-shadow{
+    z-index: -100;
+    top: -94px;
+    right: -175px;
+    width: 966px;
+    height: 540px;
+    transform: skew(28deg);
+    border-radius: 40px;
+    position: absolute;
+    background-color: #dee3fb;
+}
