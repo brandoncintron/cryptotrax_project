@@ -2,9 +2,7 @@
   "name": "cryptotrax",
   "version": "1.0.0",
   "scripts": {
-    "dev": "NODE_ENV=dev nodemon backend/server.js",
-    "build": "npm install && npm install --prefix frontend && npm run build --prefix frontend",
-    "start": "NODE_ENV=production node backend/server.js"
+    "start": "node server.js"
   },
   "type": "module",
   "keywords": [],
