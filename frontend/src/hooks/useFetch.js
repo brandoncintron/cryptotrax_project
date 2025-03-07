@@ -21,7 +21,7 @@ const useFetch = (endpoint, id, cacheKey, cacheDuration = 180000) => {
 
     const fetchData = async () => {
       try {
-        const url = `${process.env.BACKEND_URL}${endpoint.replace(':id', id)}`; // id is optional, used for metadata
+        const url = `${import.meta.env.VITE_BACKEND_URL}${endpoint.replace(':id', id)}`;
         console.log(url)
         const response = await fetch(url);
         if (!response.ok) throw new Error('Failed to fetch');
