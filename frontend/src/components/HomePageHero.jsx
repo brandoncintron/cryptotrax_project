@@ -20,7 +20,7 @@ function HomePage() {
     err,
   } = useFetch(`/api/rankings`, null, "rankingsData");
   if (loading) {
-    return <LoadingSpinner h={"10vh"} />
+    return <LoadingSpinner h={"100vh"} />
   }
   if (err) {
     return <Text>{err}</Text>
