@@ -2,7 +2,7 @@ import express from "express";
 import mongoose from "mongoose";
 import cors from "cors";
 import path from "path";
-import dotenv from "dotenv"
+import dotenv from "dotenv";
 import { connectDB } from "./config/db.js";
 
 dotenv.config();
@@ -10,114 +10,82 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5002;
 
-const __dirname = path.resolve();
-
-app.use(cors({ origin: "*" }));
+// Middleware
+app.use(cors());
 app.use(express.json());
 
-app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header(
-    "Access-Control-Allow-Headers",
-    "Origin, X-Requested-With, Content-Type, Accept"
-  );
-  next();
-});
-
+// Connect to the Mongo db
 connectDB();
 
-const BASE_URL = process.env.BASE_URL;
-const API_KEY = process.env.API_KEY;
+// Env variables and headers
+const { BASE_URL, API_KEY } = process.env;
+const API_HEADERS = { "X-CMC_PRO_API_KEY": API_KEY };
 
-const sampleNewsDataDb = mongoose.connection.useDb("sampleNewsData");
-
-// Define a Mongoose schema for the news collection
-const newsSchema = new mongoose.Schema(
-  {},
-  {
-    collection: "news", // use the news collection
-    strict: false       // allow all fields
+// Helper function to fetch data from the cryptocurrency API
+async function fetchCryptoData(url) {
+  const response = await fetch(url, { headers: API_HEADERS });
+  if (!response.ok) {
+    throw new Error("Failed to fetch data");
   }
-);
+  const data = await response.json();
+  return data.data;
+}
 
-// Create a Mongoose model using that schema
+// Set up MongoDB news model
+const sampleNewsDataDb = mongoose.connection.useDb("sampleNewsData");
+const newsSchema = new mongoose.Schema({}, { collection: "news", strict: false });
 const News = sampleNewsDataDb.model("News", newsSchema);
+
+// Routes
 
 // Best daily performers
 app.get("/api", async (req, res) => {
+  const endpoint = `${BASE_URL}/v1/cryptocurrency/listings/latest?limit=20&sort=percent_change_24h`;
   try {
-    const response = await fetch(
-      `${BASE_URL}/v1/cryptocurrency/listings/latest?limit=20&sort=percent_change_24h`,
-      {
-        headers: {
-          "X-CMC_PRO_API_KEY": API_KEY,
-        },
-      }
-    );
-    const data = await response.json();
-    res.json(data.data);
+    const data = await fetchCryptoData(endpoint);
+    res.json(data);
   } catch (error) {
-    res.status(500).json({ error: "Failed to fetch data" });
+    res.status(500).json({ error: error.message });
   }
 });
 
+// Rankings
 app.get("/api/rankings", async (req, res) => {
-  // 200 or less = 1 api call
   const limit = 200;
-  
+  const endpoint = `${BASE_URL}/v1/cryptocurrency/listings/latest?limit=${limit}`;
   try {
-    const response = await fetch(
-      `${BASE_URL}/v1/cryptocurrency/listings/latest?limit=${limit}`,
-      {
-        headers: {
-          "X-CMC_PRO_API_KEY": API_KEY,
-        },
-      }
-    );
-    const data = await response.json();
-    res.json(data.data);
+    const data = await fetchCryptoData(endpoint);
+    res.json(data);
   } catch (error) {
-    res.status(500).json({ error: "Failed to fetch data" });
+    res.status(500).json({ error: error.message });
   }
 });
 
+// Currency details by ID
 app.get("/api/currency/:id", async (req, res) => {
   const { id } = req.params;
+  const endpoint = `${BASE_URL}/v2/cryptocurrency/quotes/latest?id=${id}`;
   try {
-    const response = await fetch(
-      `${BASE_URL}/v2/cryptocurrency/quotes/latest?id=${id}`,
-      {
-        headers: {
-          "X-CMC_PRO_API_KEY": API_KEY,
-        },
-      }
-    );
-    const data = await response.json();
-    res.json(data.data);
+    const data = await fetchCryptoData(endpoint);
+    res.json(data);
   } catch (error) {
-    res.status(500).json({ error: "Failed to fetch data" });
+    res.status(500).json({ error: error.message });
   }
 });
 
+// Metadata by ID
 app.get("/api/metadata/:id", async (req, res) => {
   const { id } = req.params;
+  const endpoint = `${BASE_URL}/v2/cryptocurrency/info?id=${id}`;
   try {
-    const response = await fetch(
-      `${BASE_URL}/v2/cryptocurrency/info?id=${id}`,
-      {
-        headers: {
-          "X-CMC_PRO_API_KEY": API_KEY,
-        },
-      }
-    );
-    const data = await response.json();
-    res.json(data.data);
+    const data = await fetchCryptoData(endpoint);
+    res.json(data);
   } catch (error) {
-    res.status(500).json({ error: "Failed to fetch data" });
+    res.status(500).json({ error: error.message });
   }
 });
 
-// Fetch the news collection from the sampleNewsData database in mongoDB
+// News from MongoDB
 app.get("/api/news", async (req, res) => {
   try {
     const allNews = await News.find({});
@@ -127,20 +95,16 @@ app.get("/api/news", async (req, res) => {
   }
 });
 
+// Serve static files in prod
 if (process.env.NODE_ENV === "production") {
-  app.use(express.static(path.join(__dirname, "..", "frontend", "dist")));
-
-  app.get("*", (req, res) => {
-    res.sendFile(path.resolve(__dirname, "..", "frontend", "dist", "index.html"));
-  });
+  const __dirname = path.resolve();
+  app.use(express.static(path.join(__dirname, "frontend", "dist")));
+  app.get("*", (req, res) =>
+    res.sendFile(path.resolve(__dirname, "frontend", "dist", "index.html"))
+  );
 }
 
-
-
-
-// Use npm run dev while in backend to run
+// Start the server
 app.listen(PORT, () => {
-  console.log("Express server started at http://localhost:" + PORT);
+  console.log(`Express server started at http://localhost:${PORT}`);
 });
-
-// r70kb5vahKYLuRti
