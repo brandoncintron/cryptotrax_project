@@ -127,13 +127,15 @@ app.get("/api/news", async (req, res) => {
   }
 });
 
-if(process.env.NODE_ENV === "production") {
-  app.use(express.static(path.join(__dirname, "/frontend/dist")))
+if (process.env.NODE_ENV === "production") {
+  app.use(express.static(path.join(__dirname, "..", "frontend", "dist")));
 
   app.get("*", (req, res) => {
-    res.sendFile(path.resolve(__dirname, "frontend", "dist", "index.html"))
-  })
+    res.sendFile(path.resolve(__dirname, "..", "frontend", "dist", "index.html"));
+  });
 }
+
+
 
 
 // Use npm run dev while in backend to run
