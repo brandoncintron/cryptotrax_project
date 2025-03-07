@@ -1,8 +1,6 @@
 <a id="readme-top"></a>
 
-
 <!-- PROJECT LOGO -->
-<br />
 <div align="center">
   <a href="https://github.com/brandoncintron/cryptotrax_project">
     <img src="frontend/public/cryptotrax.png" alt="Logo" width="150" height="150">
@@ -22,9 +20,9 @@
   </p>
 </div>
 
-### Built With
+### Built With:
 
-[![React][React.js]][React-url]&nbsp;&nbsp;[![Chakra UI][ChakraUI]][ChakraUI-url]&nbsp;&nbsp;[![Express][Express.js]][Express-url]&nbsp;&nbsp;[![MongoDB][MongoDB]][Mongo-url]&nbsp;&nbsp;[![Node.js][Node.js]][Node-url]
+[![React][React.js]][React-url]&nbsp;&nbsp;&nbsp;&nbsp;[![Chakra UI][ChakraUI]][ChakraUI-url]&nbsp;&nbsp;&nbsp;&nbsp;[![Express][Express.js]][Express-url]&nbsp;&nbsp;&nbsp;&nbsp;[![MongoDB][MongoDB]][Mongo-url]&nbsp;&nbsp;&nbsp;&nbsp;[![Node.js][Node.js]][Node-url]
 
 <!-- ABOUT THE PROJECT -->
 ## About The Project
